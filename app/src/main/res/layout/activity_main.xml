@@ -5,10 +5,9 @@
     android:layout_height="match_parent"
     android:background="@color/mainBackground"
     tools:context=".MainActivity">
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recipe_card_recyclerview"
+    <fragment
+        android:id="@+id/recipe_card_list_fragment"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-
+        android:layout_height="wrap_content"
+        android:name="com.wolf.android.bakingapp.RecipeCardListFragment"/>
 </FrameLayout>

@@ -1,6 +1,8 @@
 package com.wolf.android.bakingapp;
 
 import android.content.Intent;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -24,27 +26,11 @@ public class RecipeDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_detail);
-        ingredientsTitleTextView = findViewById(R.id.ingredients_title_textview);
-        stepsTitleTextView = findViewById(R.id.steps_title_textview);
-        ingredientsRecyclerView = findViewById(R.id.ingredients_recyclerview);
-        stepsRecyclerView = findViewById(R.id.steps_recyclerview);
-        Intent intentFromMainActivity = getIntent();
-        String recipeJsonString = intentFromMainActivity.getStringExtra("recipe");
-        try {
-            JSONObject recipeJsonObject = new JSONObject(recipeJsonString);
-            JSONArray ingredientsArray = recipeJsonObject.getJSONArray("ingredients");
-            JSONArray stepsArray = recipeJsonObject.getJSONArray("steps");
 
-            RecipeIngredientAdapter recipeIngredientAdapter = new RecipeIngredientAdapter(
-                    this, ingredientsArray);
-            Utils.bindAdapter(this, ingredientsRecyclerView, recipeIngredientAdapter);
-            RecipeStepAdapter recipeStepAdapter = new RecipeStepAdapter(this, stepsArray);
-            Utils.bindAdapter(this, stepsRecyclerView, recipeStepAdapter);
-
-            Utils.setVisibilityToggleListener(ingredientsTitleTextView, ingredientsRecyclerView);
-            Utils.setVisibilityToggleListener(stepsTitleTextView, stepsRecyclerView);
-        } catch(JSONException e) {
-            e.printStackTrace();
-        }
+        RecipeDetailFragment recipeDetailFragment = new RecipeDetailFragment();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .add(R.id.recipe_detail_fragment_container, recipeDetailFragment)
+                .commit();
     }
 }

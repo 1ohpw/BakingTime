@@ -2,6 +2,7 @@ package com.wolf.android.bakingapp;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -39,16 +40,28 @@ public class RecipeCardAdapter extends RecyclerView.Adapter<RecipeCardAdapter.Re
 
         @Override
         public void onClick(View view) {
+//            int positionClicked = getLayoutPosition();
+//            try {
+//                JSONObject recipeClicked = mRecipeJsonArray.getJSONObject(positionClicked);
+//                Intent intentToRecipeDetailActivity = new Intent(itemView.getContext(),
+//                        RecipeDetailActivity.class);
+//                intentToRecipeDetailActivity.putExtra("recipe", recipeClicked.toString());
+//                itemView.getContext().startActivity(intentToRecipeDetailActivity);
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            }
             int positionClicked = getLayoutPosition();
             try {
                 JSONObject recipeClicked = mRecipeJsonArray.getJSONObject(positionClicked);
-                Intent intentToRecipeDetailActivity = new Intent(itemView.getContext(),
-                        RecipeDetailActivity.class);
-                intentToRecipeDetailActivity.putExtra("recipe", recipeClicked.toString());
-                itemView.getContext().startActivity(intentToRecipeDetailActivity);
+                OnRecipeCardClickedListener activity =
+                        (OnRecipeCardClickedListener) itemView.getContext();
+                Bundle recipeClickedBundle = new Bundle();
+                recipeClickedBundle.putString("recipe", recipeClicked.toString());
+                activity.onRecipeCardClicked(recipeClickedBundle);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+
         }
     }
 
