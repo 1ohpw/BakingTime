@@ -1,7 +1,9 @@
 package com.wolf.android.bakingapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -36,7 +38,7 @@ public class RecipeStepAdapter extends
         this.mStepsJsonArray = stepsJsonArray;
     }
 
-    class RecipeStepViewHolder extends RecyclerView.ViewHolder {
+    class RecipeStepViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         RecipeStepAdapter mRecipeStepAdapter;
         LinearLayout stepTitleContainer;
         TextView stepNumberTextView;
@@ -45,39 +47,44 @@ public class RecipeStepAdapter extends
         SimpleExoPlayer stepVideoPlayer;
         SimpleExoPlayerView stepVideoPlayerView;
         TextView stepDescriptionTextView;
+        OnRecipeStepClickListener callback;
+        Bundle currentStepsDetailBundle = new Bundle();
 
         public RecipeStepViewHolder(@NonNull View itemView,
                                           RecipeStepAdapter recipeStepAdapter) {
             super(itemView);
             this.mRecipeStepAdapter = recipeStepAdapter;
+            callback = (OnRecipeStepClickListener) itemView.getContext();
             stepTitleContainer = itemView.findViewById(R.id.step_title_container);
             stepNumberTextView = itemView.findViewById(R.id.step_number_textview);
             stepShortDescriptionTextView =
                     itemView.findViewById(R.id.step_short_description_textview);
-            stepDetailsContainer = itemView.findViewById(R.id.step_details_container);
-            stepVideoPlayerView = itemView.findViewById(R.id.step_video_player_view);
-            stepDescriptionTextView = itemView.findViewById(R.id.step_description_textview);
 
-            stepTitleContainer.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if(stepDetailsContainer.getVisibility() == View.GONE) {
-                        stepDetailsContainer.setVisibility(View.VISIBLE);
-                        try {
-                            JSONObject currentStepsObject =
-                                    mStepsJsonArray.getJSONObject(getLayoutPosition());
-                            Uri stepVideoUri =
-                                    Uri.parse(currentStepsObject.getString("videoURL"));
-                            initializeStepVideoPlayer(stepVideoUri);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    } else {
-                        releasePlayer();
-                        stepDetailsContainer.setVisibility(View.GONE);
-                    }
-                }
-            });
+//            stepDetailsContainer = itemView.findViewById(R.id.step_details_container);
+//            stepVideoPlayerView = itemView.findViewById(R.id.step_video_player_view);
+//            stepDescriptionTextView = itemView.findViewById(R.id.step_description_textview);
+
+//            stepTitleContainer.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    if(stepDetailsContainer.getVisibility() == View.GONE) {
+//                        stepDetailsContainer.setVisibility(View.VISIBLE);
+//                        try {
+//                            JSONObject currentStepsObject =
+//                                    mStepsJsonArray.getJSONObject(getLayoutPosition());
+//                            Uri stepVideoUri =
+//                                    Uri.parse(currentStepsObject.getString("videoURL"));
+//                            initializeStepVideoPlayer(stepVideoUri);
+//                        } catch (JSONException e) {
+//                            e.printStackTrace();
+//                        }
+//                    } else {
+//                        releasePlayer();
+//                        stepDetailsContainer.setVisibility(View.GONE);
+//                    }
+//                }
+//            });
+            itemView.setOnClickListener(this);
         }
 
         private void initializeStepVideoPlayer(Uri mediaUri) {
@@ -103,6 +110,32 @@ public class RecipeStepAdapter extends
             stepVideoPlayer.release();
             stepVideoPlayer = null;
         }
+
+        @Override
+        public void onClick(View view) {
+//            try {
+//                JSONObject currentStepsObject = mStepsJsonArray.getJSONObject(getLayoutPosition());
+//                String videoUriString = currentStepsObject.getString("videoURL");
+//                String descriptionString = currentStepsObject.getString("description");
+//                Intent intentToStepDetailActivity = new Intent(itemView.getContext(),
+//                        RecipeStepDetailActivity.class);
+//                intentToStepDetailActivity.putExtra("mediaUri", videoUriString);
+//                intentToStepDetailActivity.putExtra("description", descriptionString);
+//                itemView.getContext().startActivity(intentToStepDetailActivity);
+//            } catch (JSONException e) {
+//
+//            }
+            try {
+                JSONObject currentStepsObject = mStepsJsonArray.getJSONObject(getLayoutPosition());
+                currentStepsDetailBundle.putString("videoURL",
+                        currentStepsObject.getString("videoURL"));
+                currentStepsDetailBundle.putString("description",
+                        currentStepsObject.getString("description"));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            callback.onRecipeStepSelected(getLayoutPosition(), currentStepsDetailBundle);
+        }
     }
 
     @NonNull
@@ -126,7 +159,7 @@ public class RecipeStepAdapter extends
             String stepDescription = currentStepsObject.getString("description");
             recipeStepViewHolder.stepNumberTextView.setText(stepNumber);
             recipeStepViewHolder.stepShortDescriptionTextView.setText(stepShortDescription);
-            recipeStepViewHolder.stepDescriptionTextView.setText(stepDescription);
+//            recipeStepViewHolder.stepDescriptionTextView.setText(stepDescription);
         } catch (JSONException e) {
             e.printStackTrace();
         }

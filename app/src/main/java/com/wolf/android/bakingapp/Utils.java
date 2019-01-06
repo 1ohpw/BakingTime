@@ -1,5 +1,6 @@
 package com.wolf.android.bakingapp;
 import android.content.Context;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -7,8 +8,8 @@ import android.view.View;
 public class Utils {
 
     public static void bindAdapter(Context context, RecyclerView recyclerView,
-                                   RecyclerView.Adapter recyclerViewAdapter) {
-        recyclerView.setLayoutManager(new LinearLayoutManager(context));
+                                   RecyclerView.Adapter recyclerViewAdapter, int numberOfColumns) {
+        recyclerView.setLayoutManager(new GridLayoutManager(context, numberOfColumns));
         recyclerView.setAdapter(recyclerViewAdapter);
     }
 

@@ -1,5 +1,6 @@
 package com.wolf.android.bakingapp;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -14,9 +15,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class RecipeDetailFragment extends Fragment {
+public class RecipeStepListFragment extends Fragment {
 
-    public RecipeDetailFragment(){}
+    public RecipeStepListFragment(){}
 
     TextView ingredientsTitleTextView;
     RecyclerView ingredientsRecyclerView;
@@ -27,7 +28,8 @@ public class RecipeDetailFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_recipe_detail, container, false);
+
+        View rootView = inflater.inflate(R.layout.fragment_recipe_step_list, container, false);
 
         ingredientsTitleTextView = rootView.findViewById(R.id.ingredients_title_textview);
         stepsTitleTextView = rootView.findViewById(R.id.steps_title_textview);
@@ -42,16 +44,14 @@ public class RecipeDetailFragment extends Fragment {
 
             RecipeIngredientAdapter recipeIngredientAdapter = new RecipeIngredientAdapter(
                     getActivity(), ingredientsArray);
-            Utils.bindAdapter(getActivity(), ingredientsRecyclerView, recipeIngredientAdapter);
+            Utils.bindAdapter(getActivity(), ingredientsRecyclerView, recipeIngredientAdapter, 1);
             RecipeStepAdapter recipeStepAdapter = new RecipeStepAdapter(getActivity(), stepsArray);
-            Utils.bindAdapter(getActivity(), stepsRecyclerView, recipeStepAdapter);
+            Utils.bindAdapter(getActivity(), stepsRecyclerView, recipeStepAdapter, 1);
 
             Utils.setVisibilityToggleListener(ingredientsTitleTextView, ingredientsRecyclerView);
-            Utils.setVisibilityToggleListener(stepsTitleTextView, stepsRecyclerView);
         } catch(JSONException e) {
             e.printStackTrace();
         }
-
         return rootView;
     }
 }

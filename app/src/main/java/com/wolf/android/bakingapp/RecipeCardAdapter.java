@@ -40,28 +40,16 @@ public class RecipeCardAdapter extends RecyclerView.Adapter<RecipeCardAdapter.Re
 
         @Override
         public void onClick(View view) {
-//            int positionClicked = getLayoutPosition();
-//            try {
-//                JSONObject recipeClicked = mRecipeJsonArray.getJSONObject(positionClicked);
-//                Intent intentToRecipeDetailActivity = new Intent(itemView.getContext(),
-//                        RecipeDetailActivity.class);
-//                intentToRecipeDetailActivity.putExtra("recipe", recipeClicked.toString());
-//                itemView.getContext().startActivity(intentToRecipeDetailActivity);
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            }
             int positionClicked = getLayoutPosition();
             try {
                 JSONObject recipeClicked = mRecipeJsonArray.getJSONObject(positionClicked);
-                OnRecipeCardClickedListener activity =
-                        (OnRecipeCardClickedListener) itemView.getContext();
-                Bundle recipeClickedBundle = new Bundle();
-                recipeClickedBundle.putString("recipe", recipeClicked.toString());
-                activity.onRecipeCardClicked(recipeClickedBundle);
+                Intent intentToRecipeDetailActivity = new Intent(itemView.getContext(),
+                        RecipeStepActivity.class);
+                intentToRecipeDetailActivity.putExtra("recipe", recipeClicked.toString());
+                itemView.getContext().startActivity(intentToRecipeDetailActivity);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
         }
     }
 
