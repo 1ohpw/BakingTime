@@ -17,12 +17,10 @@ public class ListWidgetService extends RemoteViewsService {
 
     class ListRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
         Context mContext;
-        Intent mIntent;
         JSONArray mIngredientsArray;
 
         public ListRemoteViewsFactory(Context context, Intent intent) {
             this.mContext = context;
-            this.mIntent = intent;
             String ingredientsArrayString = intent.getStringExtra("ingredientsArray");
             try {
                 this.mIngredientsArray = new JSONArray(ingredientsArrayString);
@@ -35,14 +33,7 @@ public class ListWidgetService extends RemoteViewsService {
         public void onCreate() {}
 
         @Override
-        public void onDataSetChanged() {
-            String ingredientsArrayString = mIntent.getStringExtra("ingredientsArray");
-            try {
-                this.mIngredientsArray = new JSONArray(ingredientsArrayString);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
+        public void onDataSetChanged() {}
 
         @Override
         public void onDestroy() {}
