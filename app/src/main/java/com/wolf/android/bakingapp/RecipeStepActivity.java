@@ -8,10 +8,6 @@ import android.support.v7.widget.RecyclerView;
 import android.widget.TextView;
 
 public class RecipeStepActivity extends AppCompatActivity implements OnRecipeStepClickListener {
-    TextView ingredientsTitleTextView;
-    RecyclerView ingredientsRecyclerView;
-    TextView stepsTitleTextView;
-    RecyclerView stepsRecyclerView;
     private boolean isTwoPane;
 
     @Override
