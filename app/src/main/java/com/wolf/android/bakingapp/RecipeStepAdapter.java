@@ -50,6 +50,8 @@ public class RecipeStepAdapter extends
                 JSONObject currentStepsObject = mStepsJsonArray.getJSONObject(getLayoutPosition());
                 currentStepsDetailBundle.putString("videoURL",
                         currentStepsObject.getString("videoURL"));
+                currentStepsDetailBundle.putString("thumbnailURL",
+                        currentStepsObject.getString("thumbnailURL"));
                 currentStepsDetailBundle.putString("description",
                         currentStepsObject.getString("description"));
             } catch (JSONException e) {

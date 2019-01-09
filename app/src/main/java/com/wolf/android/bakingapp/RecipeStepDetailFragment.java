@@ -9,7 +9,11 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.LoadControl;
@@ -35,6 +39,7 @@ public class RecipeStepDetailFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        boolean isTwoPane = getResources().getBoolean(R.bool.isTwoPane);
         View rootView = inflater.inflate(R.layout.fragment_recipe_step_detail, container, false);
         stepVideoPlayerView = rootView.findViewById(R.id.step_video_player_view);
         stepDescriptionTextView = rootView.findViewById(R.id.step_description_textview);
@@ -45,12 +50,21 @@ public class RecipeStepDetailFragment extends Fragment {
         }
 
         String stepDescription = stepDetailsBundle.getString("description");
+        stepDescriptionTextView.setText(stepDescription);
         String stepVideoUrlString = stepDetailsBundle.getString("videoURL");
-
-        if(stepDescription != null && stepVideoUrlString != null) {
+        if(stepVideoUrlString != null && !stepVideoUrlString.isEmpty()) {
+            if(isTwoPane) {
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        0,
+                        2.0f
+                );
+                stepVideoPlayerView.setLayoutParams(params);
+            }
             Uri stepVideoUri = Uri.parse(stepDetailsBundle.getString("videoURL"));
-            stepDescriptionTextView.setText(stepDescription);
             initializeStepVideoPlayer(stepVideoUri);
+        } else {
+            stepVideoPlayerView.setVisibility(View.GONE);
         }
         return rootView;
     }

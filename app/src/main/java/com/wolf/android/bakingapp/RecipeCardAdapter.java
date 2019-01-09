@@ -9,15 +9,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class RecipeCardAdapter extends RecyclerView.Adapter<RecipeCardAdapter.RecipeViewHolder> {
+    private Context mContext;
     private LayoutInflater mInflater;
     private JSONArray mRecipeJsonArray;
 
     public RecipeCardAdapter(Context context, JSONArray recipeJsonArray) {
+        this.mContext = context;
         this.mInflater = LayoutInflater.from(context);
         this.mRecipeJsonArray = recipeJsonArray;
     }
@@ -65,6 +70,7 @@ public class RecipeCardAdapter extends RecyclerView.Adapter<RecipeCardAdapter.Re
                                  int i) {
         try {
             JSONObject currentRecipeObject = mRecipeJsonArray.getJSONObject(i);
+            String imageUrlString = currentRecipeObject.getString("image");
             String currentRecipeName = currentRecipeObject.getString("name");
             String currentRecipeServings =
                     Integer.toString(currentRecipeObject.getInt("servings"));
@@ -86,7 +92,13 @@ public class RecipeCardAdapter extends RecyclerView.Adapter<RecipeCardAdapter.Re
                 default:
                     imageId = R.drawable.default_cupcake;
             }
-            recipeViewHolder.recipeImageView.setImageResource(imageId);
+
+            if(imageUrlString != null && !imageUrlString.isEmpty()) {
+                Glide.with(this.getContext()).load(imageUrlString)
+                        .into(recipeViewHolder.recipeImageView);
+            } else {
+                recipeViewHolder.recipeImageView.setImageResource(imageId);
+            }
             recipeViewHolder.recipeNameTextView.setText(currentRecipeName);
             recipeViewHolder.recipeServingsTextView.setText(currentRecipeServings);
         } catch (JSONException e) {
@@ -98,5 +110,9 @@ public class RecipeCardAdapter extends RecyclerView.Adapter<RecipeCardAdapter.Re
     @Override
     public int getItemCount() {
         return mRecipeJsonArray.length();
+    }
+
+    public Context getContext() {
+        return mContext;
     }
 }
