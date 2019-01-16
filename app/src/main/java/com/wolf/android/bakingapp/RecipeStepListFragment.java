@@ -14,8 +14,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.RemoteViews;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,8 +44,10 @@ public class RecipeStepListFragment extends Fragment {
         stepsRecyclerView = rootView.findViewById(R.id.steps_recyclerview);
         Intent intentFromMainActivity = getActivity().getIntent();
         String recipeJsonString = intentFromMainActivity.getStringExtra("recipe");
+        String recipeName = "";
         try {
             JSONObject recipeJsonObject = new JSONObject(recipeJsonString);
+            recipeName = recipeJsonObject.getString("name");
             JSONArray ingredientsArray = recipeJsonObject.getJSONArray("ingredients");
             mIngredientsArray = ingredientsArray;
             JSONArray stepsArray = recipeJsonObject.getJSONArray("steps");
@@ -61,6 +61,7 @@ public class RecipeStepListFragment extends Fragment {
         } catch(JSONException e) {
             e.printStackTrace();
         }
+        getActivity().setTitle(recipeName);
         return rootView;
     }
 

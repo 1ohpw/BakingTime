@@ -19,9 +19,12 @@ public class RecipeWidgetProvider extends AppWidgetProvider {
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, JSONArray jsonArray,
                                 int appWidgetId) {
         mIngredientList = jsonArray;
-        RemoteViews remoteViews = null;
+        RemoteViews remoteViews;
         if(mIngredientList != null) {
             remoteViews = getIngredientListRemoteView(context);
+        } else {
+            remoteViews = new RemoteViews(context.getPackageName(), R.layout.recipe_widget_list);
+            remoteViews.setEmptyView(R.id.widget_ingredient_list, R.id.empty_widget_text_view);
         }
         appWidgetManager.updateAppWidget(appWidgetId, remoteViews);
     }
@@ -51,6 +54,7 @@ public class RecipeWidgetProvider extends AppWidgetProvider {
 
     private static RemoteViews getIngredientListRemoteView(Context context) {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.recipe_widget_list);
+        views.setEmptyView(R.id.widget_ingredient_list, R.id.empty_widget_text_view);
         Intent intent = new Intent(context, ListWidgetService.class);
         intent.putExtra("ingredientsArray", mIngredientList.toString());
         dataChangeFlag++;

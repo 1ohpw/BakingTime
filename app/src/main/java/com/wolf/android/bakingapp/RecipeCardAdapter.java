@@ -47,10 +47,10 @@ public class RecipeCardAdapter extends RecyclerView.Adapter<RecipeCardAdapter.Re
             int positionClicked = getLayoutPosition();
             try {
                 JSONObject recipeClicked = mRecipeJsonArray.getJSONObject(positionClicked);
-                Intent intentToRecipeDetailActivity = new Intent(itemView.getContext(),
+                Intent intentToRecipeStepActivity = new Intent(itemView.getContext(),
                         RecipeStepActivity.class);
-                intentToRecipeDetailActivity.putExtra("recipe", recipeClicked.toString());
-                itemView.getContext().startActivity(intentToRecipeDetailActivity);
+                intentToRecipeStepActivity.putExtra("recipe", recipeClicked.toString());
+                itemView.getContext().startActivity(intentToRecipeStepActivity);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
