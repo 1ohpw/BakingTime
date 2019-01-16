@@ -35,7 +35,6 @@ public class ListWidgetService extends RemoteViewsService {
         public void onDataSetChanged() {}
         @Override
         public void onDestroy() {}
-
         @Override
         public int getCount() {
             return mIngredientsArray.length();
