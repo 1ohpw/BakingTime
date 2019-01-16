@@ -31,10 +31,8 @@ public class ListWidgetService extends RemoteViewsService {
 
         @Override
         public void onCreate() {}
-
         @Override
         public void onDataSetChanged() {}
-
         @Override
         public void onDestroy() {}
 
