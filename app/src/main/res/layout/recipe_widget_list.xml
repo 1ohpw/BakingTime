@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:text="Add a recipe to see its ingredients!"/>
+        android:text="@string/empty_widget_text"/>
     <ListView
         android:id="@+id/widget_ingredient_list"
         android:layout_width="match_parent"
