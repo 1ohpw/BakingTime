@@ -9,11 +9,9 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.LoadControl;
@@ -33,6 +31,7 @@ public class RecipeStepDetailFragment extends Fragment {
     SimpleExoPlayer stepVideoPlayer;
     SimpleExoPlayerView stepVideoPlayerView;
     TextView stepDescriptionTextView;
+    Uri stepVideoUri;
     Bundle stepDetailsBundle;
 
     @Nullable
@@ -61,7 +60,7 @@ public class RecipeStepDetailFragment extends Fragment {
                 );
                 stepVideoPlayerView.setLayoutParams(params);
             }
-            Uri stepVideoUri = Uri.parse(stepDetailsBundle.getString("videoURL"));
+            stepVideoUri = Uri.parse(stepDetailsBundle.getString("videoURL"));
             initializeStepVideoPlayer(stepVideoUri);
         } else {
             stepVideoPlayerView.setVisibility(View.GONE);
@@ -89,6 +88,26 @@ public class RecipeStepDetailFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (Util.SDK_INT > 23 || stepVideoPlayer == null) {
+            if(stepVideoUri != null) {
+                initializeStepVideoPlayer(stepVideoUri);
+            }
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (Util.SDK_INT <= 23 || stepVideoPlayer == null) {
+            if(stepVideoUri != null) {
+                initializeStepVideoPlayer(stepVideoUri);
+            }
+        }
+    }
+
     private void releasePlayer() {
         stepVideoPlayer.stop();
         stepVideoPlayer.release();
@@ -96,9 +115,17 @@ public class RecipeStepDetailFragment extends Fragment {
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        if(stepVideoPlayer != null) {
+    public void onPause() {
+        super.onPause();
+        if (Util.SDK_INT <= 23 && stepVideoPlayer != null) {
+            releasePlayer();
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (Util.SDK_INT > 23 && stepVideoPlayer != null) {
             releasePlayer();
         }
     }
