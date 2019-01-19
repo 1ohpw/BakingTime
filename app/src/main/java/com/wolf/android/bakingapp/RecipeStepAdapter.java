@@ -30,7 +30,7 @@ public class RecipeStepAdapter extends
         TextView stepNumberTextView;
         TextView stepShortDescriptionTextView;
         OnRecipeStepClickListener callback;
-        Bundle currentStepsDetailBundle = new Bundle();
+        Bundle stepsDetailBundle = new Bundle();
 
         public RecipeStepViewHolder(@NonNull View itemView,
                                           RecipeStepAdapter recipeStepAdapter) {
@@ -46,18 +46,9 @@ public class RecipeStepAdapter extends
 
         @Override
         public void onClick(View view) {
-            try {
-                JSONObject currentStepsObject = mStepsJsonArray.getJSONObject(getLayoutPosition());
-                currentStepsDetailBundle.putString("videoURL",
-                        currentStepsObject.getString("videoURL"));
-                currentStepsDetailBundle.putString("thumbnailURL",
-                        currentStepsObject.getString("thumbnailURL"));
-                currentStepsDetailBundle.putString("description",
-                        currentStepsObject.getString("description"));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            callback.onRecipeStepSelected(getLayoutPosition(), currentStepsDetailBundle);
+            stepsDetailBundle.putString("recipeSteps", mStepsJsonArray.toString());
+            stepsDetailBundle.putInt("currentStepIndex", getLayoutPosition());
+            callback.onRecipeStepSelected(getLayoutPosition(), stepsDetailBundle);
         }
     }
 

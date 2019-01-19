@@ -25,6 +25,10 @@ import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class RecipeStepDetailFragment extends Fragment {
     public RecipeStepDetailFragment() {}
 
@@ -33,6 +37,7 @@ public class RecipeStepDetailFragment extends Fragment {
     TextView stepDescriptionTextView;
     Uri stepVideoUri;
     Bundle stepDetailsBundle;
+    JSONArray recipeStepsArray;
     long position = 0;
     boolean playWhenReady = true;
 
@@ -48,24 +53,32 @@ public class RecipeStepDetailFragment extends Fragment {
         if(stepDetailsBundle == null) {
             Intent intentFromStepListActivity = getActivity().getIntent();
             stepDetailsBundle = intentFromStepListActivity.getExtras();
+            String recipeStepsJson = stepDetailsBundle.getString("recipeSteps");
+            int currentStepIndex = stepDetailsBundle.getInt("currentStepIndex");
+            try {
+                recipeStepsArray = new JSONArray(recipeStepsJson);
+                JSONObject currentStepObject = recipeStepsArray.getJSONObject(currentStepIndex);
+                String stepDescription = currentStepObject.getString("description");
+                stepDescriptionTextView.setText(stepDescription);
+                String stepVideoUrlString = currentStepObject.getString("videoURL");
+                if(stepVideoUrlString != null && !stepVideoUrlString.isEmpty()) {
+                    if(isTwoPane) {
+                        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                                ViewGroup.LayoutParams.MATCH_PARENT,
+                                0,
+                                2.0f
+                        );
+                        stepVideoPlayerView.setLayoutParams(params);
+                    }
+                    stepVideoUri = Uri.parse(currentStepObject.getString("videoURL"));
+                } else {
+                    stepVideoPlayerView.setVisibility(View.GONE);
+                }
+            } catch(JSONException e) {
+                e.printStackTrace();
+            }
         }
 
-        String stepDescription = stepDetailsBundle.getString("description");
-        stepDescriptionTextView.setText(stepDescription);
-        String stepVideoUrlString = stepDetailsBundle.getString("videoURL");
-        if(stepVideoUrlString != null && !stepVideoUrlString.isEmpty()) {
-            if(isTwoPane) {
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        0,
-                        2.0f
-                );
-                stepVideoPlayerView.setLayoutParams(params);
-            }
-            stepVideoUri = Uri.parse(stepDetailsBundle.getString("videoURL"));
-        } else {
-            stepVideoPlayerView.setVisibility(View.GONE);
-        }
         return rootView;
     }
 
