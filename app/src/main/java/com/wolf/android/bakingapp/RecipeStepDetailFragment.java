@@ -33,6 +33,8 @@ public class RecipeStepDetailFragment extends Fragment {
     TextView stepDescriptionTextView;
     Uri stepVideoUri;
     Bundle stepDetailsBundle;
+    long position = 0;
+    boolean playWhenReady = true;
 
     @Nullable
     @Override
@@ -61,7 +63,6 @@ public class RecipeStepDetailFragment extends Fragment {
                 stepVideoPlayerView.setLayoutParams(params);
             }
             stepVideoUri = Uri.parse(stepDetailsBundle.getString("videoURL"));
-            initializeStepVideoPlayer(stepVideoUri);
         } else {
             stepVideoPlayerView.setVisibility(View.GONE);
         }
@@ -78,20 +79,21 @@ public class RecipeStepDetailFragment extends Fragment {
             LoadControl loadControl = new DefaultLoadControl();
             stepVideoPlayer = ExoPlayerFactory.newSimpleInstance(getActivity(),
                     trackSelector, loadControl);
-            stepVideoPlayerView.setPlayer(stepVideoPlayer);
             String userAgent = Util.getUserAgent(getActivity(), "BakingTime");
             MediaSource mediaSource = new ExtractorMediaSource(mediaUri,
                     new DefaultDataSourceFactory(getActivity(), userAgent),
                     new DefaultExtractorsFactory(), null, null);
             stepVideoPlayer.prepare(mediaSource);
-            stepVideoPlayer.setPlayWhenReady(true);
+            stepVideoPlayer.setPlayWhenReady(playWhenReady);
+            stepVideoPlayer.seekTo(position);
+            stepVideoPlayerView.setPlayer(stepVideoPlayer);
         }
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        if (Util.SDK_INT > 23 || stepVideoPlayer == null) {
+        if (Util.SDK_INT > 23 && stepVideoPlayer == null) {
             if(stepVideoUri != null) {
                 initializeStepVideoPlayer(stepVideoUri);
             }
@@ -101,7 +103,7 @@ public class RecipeStepDetailFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (Util.SDK_INT <= 23 || stepVideoPlayer == null) {
+        if (Util.SDK_INT <= 23 && stepVideoPlayer == null) {
             if(stepVideoUri != null) {
                 initializeStepVideoPlayer(stepVideoUri);
             }
@@ -118,6 +120,8 @@ public class RecipeStepDetailFragment extends Fragment {
     public void onPause() {
         super.onPause();
         if (Util.SDK_INT <= 23 && stepVideoPlayer != null) {
+            position = stepVideoPlayer.getCurrentPosition();
+            playWhenReady = stepVideoPlayer.getPlayWhenReady();
             releasePlayer();
         }
     }
@@ -126,7 +130,25 @@ public class RecipeStepDetailFragment extends Fragment {
     public void onStop() {
         super.onStop();
         if (Util.SDK_INT > 23 && stepVideoPlayer != null) {
+            position = stepVideoPlayer.getCurrentPosition();
+            playWhenReady = stepVideoPlayer.getPlayWhenReady();
             releasePlayer();
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putLong("position", position);
+        outState.putBoolean("ready", playWhenReady);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (savedInstanceState != null) {
+            position = savedInstanceState.getLong("position");
+            playWhenReady = savedInstanceState.getBoolean("ready");
         }
     }
 }
