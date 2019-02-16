@@ -135,8 +135,7 @@ public class RecipeStepDetailFragment extends Fragment {
                 e.printStackTrace();
             }
         }
-
-
+        
         return rootView;
     }
 
