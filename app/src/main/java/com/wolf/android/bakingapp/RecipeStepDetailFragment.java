@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -35,55 +36,137 @@ public class RecipeStepDetailFragment extends Fragment {
     SimpleExoPlayer stepVideoPlayer;
     SimpleExoPlayerView stepVideoPlayerView;
     TextView stepDescriptionTextView;
+    Button previousStepButton;
+    Button nextStepButton;
     Uri stepVideoUri;
     Bundle stepDetailsBundle;
     JSONArray recipeStepsArray;
+    boolean isTwoPane;
+    String recipeStepsJson;
     long position = 0;
+    int currentStepIndex;
     boolean playWhenReady = true;
+
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        boolean isTwoPane = getResources().getBoolean(R.bool.isTwoPane);
+        isTwoPane = getResources().getBoolean(R.bool.isTwoPane);
         View rootView = inflater.inflate(R.layout.fragment_recipe_step_detail, container, false);
         stepVideoPlayerView = rootView.findViewById(R.id.step_video_player_view);
         stepDescriptionTextView = rootView.findViewById(R.id.step_description_textview);
+        previousStepButton = rootView.findViewById(R.id.previous_step_button);
+        nextStepButton = rootView.findViewById(R.id.next_step_button);
 
         if(stepDetailsBundle == null) {
             Intent intentFromStepListActivity = getActivity().getIntent();
             stepDetailsBundle = intentFromStepListActivity.getExtras();
-            String recipeStepsJson = stepDetailsBundle.getString("recipeSteps");
-            int currentStepIndex = stepDetailsBundle.getInt("currentStepIndex");
+            currentStepIndex = stepDetailsBundle.getInt("currentStepIndex");
+            if (isTwoPane) {
+                previousStepButton.setVisibility(View.GONE);
+                nextStepButton.setVisibility(View.GONE);
+                try {
+                    JSONObject recipeObject =
+                            new JSONObject(stepDetailsBundle.getString("recipe"));
+                    recipeStepsArray = new JSONArray(recipeObject.getJSONArray("steps"));
+                    setStepDetails();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                if (currentStepIndex == 0) {
+                    previousStepButton.setVisibility(View.GONE);
+                }
+
+                recipeStepsJson = stepDetailsBundle.getString("steps");
+                try {
+                    recipeStepsArray = new JSONArray(recipeStepsJson);
+                    setStepDetails();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                nextStepButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        previousStepButton.setVisibility(View.VISIBLE);
+                        if (currentStepIndex < recipeStepsArray.length() - 1) {
+                            currentStepIndex++;
+                            if (currentStepIndex == recipeStepsArray.length() - 1) {
+                                view.setVisibility(View.GONE);
+                            } else {
+                                view.setVisibility(View.VISIBLE);
+                            }
+                            setStepDetails();
+                        }
+                    }
+                });
+
+                previousStepButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        nextStepButton.setVisibility(View.VISIBLE);
+                        if (currentStepIndex > 0) {
+                            if (currentStepIndex == 1) {
+                                view.setVisibility(View.GONE);
+                            } else {
+                                view.setVisibility(View.VISIBLE);
+                            }
+                            currentStepIndex--;
+                            setStepDetails();
+                        }
+
+                    }
+                });
+
+            }
+        } else {
+            if(isTwoPane) {
+                previousStepButton.setVisibility(View.GONE);
+                nextStepButton.setVisibility(View.GONE);
+            }
+            recipeStepsJson = stepDetailsBundle.getString("steps");
+            currentStepIndex = stepDetailsBundle.getInt("currentStepIndex");
             try {
                 recipeStepsArray = new JSONArray(recipeStepsJson);
-                JSONObject currentStepObject = recipeStepsArray.getJSONObject(currentStepIndex);
-                String stepDescription = currentStepObject.getString("description");
-                stepDescriptionTextView.setText(stepDescription);
-                String stepVideoUrlString = currentStepObject.getString("videoURL");
-                if(stepVideoUrlString != null && !stepVideoUrlString.isEmpty()) {
-                    if(isTwoPane) {
-                        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                                ViewGroup.LayoutParams.MATCH_PARENT,
-                                0,
-                                2.0f
-                        );
-                        stepVideoPlayerView.setLayoutParams(params);
-                    }
-                    stepVideoUri = Uri.parse(currentStepObject.getString("videoURL"));
-                } else {
-                    stepVideoPlayerView.setVisibility(View.GONE);
-                }
-            } catch(JSONException e) {
+                setStepDetails();
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
+
 
         return rootView;
     }
 
     public void setStepDetailsBundle(Bundle stepDetailsBundle) {
         this.stepDetailsBundle = stepDetailsBundle;
+    }
+
+    public void setStepDetails() {
+        try {
+            JSONObject currentStepObject = recipeStepsArray.getJSONObject(currentStepIndex);
+            String stepDescription = currentStepObject.getString("description");
+            stepDescriptionTextView.setText(stepDescription);
+            String stepVideoUrlString = currentStepObject.getString("videoURL");
+            if (stepVideoUrlString != null && !stepVideoUrlString.isEmpty()) {
+                stepVideoPlayerView.setVisibility(View.VISIBLE);
+                if (isTwoPane) {
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 2.0f);
+                    stepVideoPlayerView.setLayoutParams(params);
+                }
+                stepVideoUri = Uri.parse(currentStepObject.getString("videoURL"));
+                if(stepVideoPlayer != null) {
+                    releasePlayer();
+                }
+                initializeStepVideoPlayer(stepVideoUri);
+            } else {
+                stepVideoPlayerView.setVisibility(View.INVISIBLE);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     private void initializeStepVideoPlayer(Uri mediaUri) {
@@ -100,6 +183,7 @@ public class RecipeStepDetailFragment extends Fragment {
             stepVideoPlayer.setPlayWhenReady(playWhenReady);
             stepVideoPlayer.seekTo(position);
             stepVideoPlayerView.setPlayer(stepVideoPlayer);
+            stepVideoPlayerView.setVisibility(View.VISIBLE);
         }
     }
 

@@ -46,7 +46,7 @@ public class RecipeStepAdapter extends
 
         @Override
         public void onClick(View view) {
-            stepsDetailBundle.putString("recipeSteps", mStepsJsonArray.toString());
+            stepsDetailBundle.putString("steps", mStepsJsonArray.toString());
             stepsDetailBundle.putInt("currentStepIndex", getLayoutPosition());
             callback.onRecipeStepSelected(getLayoutPosition(), stepsDetailBundle);
         }
@@ -68,7 +68,7 @@ public class RecipeStepAdapter extends
         try {
             JSONObject currentStepsObject = mStepsJsonArray.getJSONObject(i);
             String stepNumber =
-                    Integer.toString(currentStepsObject.getInt("id") + 1);
+                    Integer.toString(currentStepsObject.getInt("id"));
             String stepShortDescription = currentStepsObject.getString("shortDescription");
             recipeStepViewHolder.stepNumberTextView.setText(stepNumber);
             recipeStepViewHolder.stepShortDescriptionTextView.setText(stepShortDescription);

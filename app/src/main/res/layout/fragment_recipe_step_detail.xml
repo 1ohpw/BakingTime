@@ -11,28 +11,39 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:padding="8dp"
+        android:visibility="invisible"
         app:resize_mode="fill"/>
     <TextView
         android:id="@+id/step_description_textview"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:gravity="center_horizontal"
+        android:gravity="center"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
         android:padding="16dp" />
-    <LinearLayout
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
-        <Button
-            android:id="@+id/previous_step_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/previous_step_button_text"/>
-        <Button
-            android:id="@+id/next_step_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/next_step_button_text"/>
-    </LinearLayout>
+            <Button
+                android:id="@+id/previous_step_button"
+                android:layout_width="96dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:backgroundTint="@color/colorPrimary"
+                android:layout_marginStart="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:text="@string/previous_step_button_text"/>
+            <Button
+                android:id="@+id/next_step_button"
+                android:layout_width="96dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:backgroundTint="@color/colorPrimary"
+                android:layout_marginEnd="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:text="@string/next_step_button_text"/>
+    </android.support.constraint.ConstraintLayout>
 </LinearLayout>

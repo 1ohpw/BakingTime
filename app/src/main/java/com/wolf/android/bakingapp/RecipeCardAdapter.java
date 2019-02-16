@@ -50,6 +50,7 @@ public class RecipeCardAdapter extends RecyclerView.Adapter<RecipeCardAdapter.Re
                 Intent intentToRecipeStepActivity = new Intent(itemView.getContext(),
                         RecipeStepActivity.class);
                 intentToRecipeStepActivity.putExtra("recipe", recipeClicked.toString());
+                intentToRecipeStepActivity.putExtra("currentStepIndex", positionClicked);
                 itemView.getContext().startActivity(intentToRecipeStepActivity);
             } catch (JSONException e) {
                 e.printStackTrace();
